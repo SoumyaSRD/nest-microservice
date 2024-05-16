@@ -13,9 +13,9 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
             ...document, _id: new Types.ObjectId(),
         });
         return (await createdDocument.save()).toJSON() as unknown as TDocument
-    } */
-
-    /*    findOne(filterQuery: FilterQuery<TDocument>): Observable<TDocument> {
+    } 
+    
+    findOne(filterQuery: FilterQuery<TDocument>): Observable<TDocument> {
            const document = new this.readonlymodel({
                ...document,
                _id: new Types.ObjectId(),
@@ -66,9 +66,6 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
  */
 
     /* Observable Method */
-
-
-    // Assuming you have imported necessary dependencies and defined your model
 
     findOne<TDocument>(filterQuery: FilterQuery<TDocument>): Observable<TDocument | any> {
         return from(this.model.findOne(filterQuery).lean<TDocument>(true)).pipe(
