@@ -67,6 +67,13 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
 
     /* Observable Method */
 
+    create(document: Omit<TDocument, '_id'>): Observable<TDocument> {
+        const createdDocument = new this.model({
+            ...document, _id: new Types.ObjectId(),
+        });
+        return from(createdDocument.save().then(document => document.toJSON() as TDocument));
+    }
+
     findOne<TDocument>(filterQuery: FilterQuery<TDocument>): Observable<TDocument | any> {
         return from(this.model.findOne(filterQuery).lean<TDocument>(true)).pipe(
             map((document) => {

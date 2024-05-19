@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
-import { ConfigService, ConfigModule as NestConfigModule } from '@nestjs/config'
+import { ConfigService, ConfigModule as NestConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
-import { Mongoose } from 'mongoose';
 
 @Module({
     imports: [NestConfigModule.forRoot({
