@@ -7,7 +7,7 @@ import { ConfigModule } from '../config/config.module';
     imports: [MongooseModule.forRootAsync({
         imports: [ConfigModule],
         useFactory: (configService: ConfigService) => ({
-
+            // nodeEnv: configService.get<string>('NODE_ENV'),
             uri: configService.get('MONGODB_URI')
         }),
         inject: [ConfigService]

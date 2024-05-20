@@ -1,18 +1,26 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { Type } from "class-transformer";
+import { IsDate, IsNotEmpty, IsString } from "class-validator";
 
 export class CreateReservationDto {
-    // @ApiProperty({ name: 'startDate', default: new Date() })
-    @ApiProperty()
+    @ApiProperty({ description: '', name: 'startDate', default: new Date() })
+    @IsDate()
+    @Type(() => Date)
     startDate: Date;
 
-    // @ApiProperty({ name: 'endDate', default: new Date() })
-    @ApiProperty()
+    @ApiProperty({ description: '', name: 'endDate', default: new Date() })
+    @IsDate()
+    @Type(() => Date)
     endDate: Date
-    // @ApiProperty({ name: 'placeId', default: 1123 })
-    @ApiProperty()
 
+
+    @ApiProperty({ description: '', name: 'placeId', default: 1123 })
+    @IsString()
+    @IsNotEmpty()
     placeId: string;
-    // @ApiProperty({ name: 'invoiceId', default: 1234 })
-    @ApiProperty()
+
+    @ApiProperty({ description: '', name: 'invoiceId', default: 1234 })
+    @IsString()
+    @IsNotEmpty()
     invoiceId: string;
 }

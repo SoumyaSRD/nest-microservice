@@ -1,7 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerDocumentOptions, SwaggerModule } from '@nestjs/swagger';
 import { ReservationsModule } from './reservations.module';
-import { Logger } from '@nestjs/common';
+import { Logger } from 'nestjs-pino';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(ReservationsModule);
@@ -21,7 +22,10 @@ async function bootstrap() {
   };
   const document = SwaggerModule.createDocument(app, config, options);
   SwaggerModule.setup('api', app, document);
-  app.useLogger(new Logger());
-  await app.listen(3001);
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true }))
+  app.useLogger(app.get(Logger));
+  console.log(process.env.port);
+
+  await app.listen(process.env.port || 3000);
 }
 bootstrap();
