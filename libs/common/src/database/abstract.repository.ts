@@ -1,12 +1,15 @@
+import { NotFoundException } from "@nestjs/common";
 import { FilterQuery, Model, Types, UpdateQuery } from "mongoose";
-import { AbstractDocument } from "./abstract.scema";
-import { Logger, NotFoundException } from "@nestjs/common";
-import { NotFoundError, Observable, from, throwError } from 'rxjs';
+import { PinoLogger } from "nestjs-pino";
+import { Observable, from, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+import { AbstractDocument } from "./abstract.scema";
 
 export abstract class AbstractRepository<TDocument extends AbstractDocument> {
-    protected abstract readonly logger: Logger
-    constructor(protected readonly model: Model<TDocument>) { }
+    protected abstract readonly logger: PinoLogger
+    constructor(protected readonly model: Model<TDocument>) {
+
+    }
     /* Async Await Method */
     /* async create(document: Omit<TDocument, '_id'>): Promise<TDocument> {
         const createdDocument = new this.readonlymodel({

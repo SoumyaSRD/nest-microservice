@@ -1,8 +1,8 @@
+import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerDocumentOptions, SwaggerModule } from '@nestjs/swagger';
-import { ReservationsModule } from './reservations.module';
 import { Logger } from 'nestjs-pino';
-import { ValidationPipe } from '@nestjs/common';
+import { ReservationsModule } from './reservations.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(ReservationsModule);
