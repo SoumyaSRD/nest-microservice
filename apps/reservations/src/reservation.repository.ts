@@ -6,12 +6,12 @@ import { PinoLogger } from "nestjs-pino";
 import { ReservationDocument } from "./reservations/models/reservation.scema";
 @Injectable()
 export class ReservationRepository extends AbstractRepository<ReservationDocument> {
-    protected readonly logger: PinoLogger = new PinoLogger({ renameContext: ReservationRepository.name });
+    // protected readonly logger: PinoLogger = new PinoLogger({ renameContext: ReservationRepository.name });
 
     constructor(
-        @InjectModel(ReservationDocument.name) reservationModel: Model<ReservationDocument>
+        @InjectModel(ReservationDocument.name) reservationModel: Model<ReservationDocument>, logger: PinoLogger
 
     ) {
-        super(reservationModel)
+        super(reservationModel, logger)
     }
 }

@@ -6,8 +6,8 @@ import { catchError, map } from 'rxjs/operators';
 import { AbstractDocument } from "./abstract.scema";
 
 export abstract class AbstractRepository<TDocument extends AbstractDocument> {
-    protected abstract readonly logger: PinoLogger
-    constructor(protected readonly model: Model<TDocument>) {
+    // protected abstract readonly logger: PinoLogger
+    constructor(protected readonly model: Model<TDocument>, private logger: PinoLogger) {
 
     }
     /* Async Await Method */
