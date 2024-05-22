@@ -12,6 +12,6 @@ export class ReservationRepository extends AbstractRepository<ReservationDocumen
         @InjectModel(ReservationDocument.name) reservationModel: Model<ReservationDocument>, logger: PinoLogger
 
     ) {
-        super(reservationModel, logger)
+        super(reservationModel, logger, ReservationRepository.name)
     }
 }

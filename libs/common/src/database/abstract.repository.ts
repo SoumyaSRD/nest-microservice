@@ -7,8 +7,8 @@ import { AbstractDocument } from "./abstract.scema";
 
 export abstract class AbstractRepository<TDocument extends AbstractDocument> {
     // protected abstract readonly logger: PinoLogger
-    constructor(protected readonly model: Model<TDocument>, private logger: PinoLogger) {
-
+    constructor(protected readonly model: Model<TDocument>, private logger: PinoLogger, name) {
+        logger.setContext(name)
     }
     /* Async Await Method */
     /* async create(document: Omit<TDocument, '_id'>): Promise<TDocument> {

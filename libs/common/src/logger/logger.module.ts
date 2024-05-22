@@ -14,11 +14,14 @@ import { LoggerModule } from 'nestjs-pino';
                         {
                             level: 'trace',
                             target: 'pino/file',
+
+
                             options: {
                                 singleLine: true,
                                 colorize: true,
                                 destination: './logs/app.log',
                                 translateTime: 'SYS:standard',
+
                             },
                         },
                     ],
