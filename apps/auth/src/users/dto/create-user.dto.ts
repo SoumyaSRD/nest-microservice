@@ -1,12 +1,14 @@
+import { OmitType } from "@nestjs/mapped-types";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsDate, IsEmail, IsNotEmpty, IsString, IsStrongPassword } from "class-validator";
+import { Exclude, Type } from "class-transformer";
+import { IsDate, IsEmail, IsNotEmpty, IsNumber, IsString, IsStrongPassword } from "class-validator";
 
 export class CreateUserDto {
     @ApiProperty({ description: 'Email id', name: 'email', default: 'john@email.com' })
     @IsEmail()
     email: string;
 
-    @ApiProperty({ description: 'strong passoword atlit contain a special character', name: 'password', default: 'john@123' })
+    @ApiProperty({ description: 'strong passoword atlit contain a special character', name: 'password', default: 'John@123' })
     @IsStrongPassword()
     password: string;
 
@@ -17,9 +19,31 @@ export class CreateUserDto {
 
     @ApiProperty({ description: 'User Created Date', name: 'createdOn', default: new Date() })
     @IsDate()
-    createdOn: string
+    @Type(() => Date)
+    createdOn: Date
 
     @ApiProperty({ description: 'User Modified Date', name: 'modifiedOn', default: new Date() })
     @IsDate()
-    modifiedOn: string
+    @Type(() => Date)
+    modifiedOn: Date
 }
+
+export class UserDto extends CreateUserDto {
+    @Exclude({ toPlainOnly: true, toClassOnly: true })
+    password: string;
+}
+
+export class UserFilterDto extends UserDto {
+    @Exclude({ toPlainOnly: true, toClassOnly: true })
+    password: string;
+    @ApiProperty({ description: 'page number', name: 'page', default: 1 })
+    @IsNotEmpty()
+    @IsNumber()
+    page: number;
+
+    @ApiProperty({ description: 'data limit', name: 'limit', default: 10 })
+    @IsNotEmpty()
+    @IsNumber()
+    limit: number
+}
+

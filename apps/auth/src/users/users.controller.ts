@@ -1,40 +1,67 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  ConflictException,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { CreateUserDto } from './dto/create-user.dto';
+import { Observable, catchError, from, map } from 'rxjs';
+import { CreateUserDto, UserDto, UserFilterDto } from './dto/create-user.dto';
 import { UsersService } from './users.service';
-import { Observable, from } from 'rxjs';
 
 @Controller('users')
 @ApiTags('users')
 export class UsersController {
-
-  constructor(private readonly userService: UsersService) {
-
-  }
-
+  constructor(private readonly userService: UsersService) { }
 
   @Post()
-  create(@Body() createReservationDto: CreateUserDto): Observable<any> {
-    return from(this.userService.create(createReservationDto));
+  create(@Body() createUserDto: CreateUserDto): Observable<UserDto | any> {
+    return this.userService.findOneByEmail(createUserDto.email).pipe(
+      map(foundUser => {
+        if (foundUser?.email) {
+          throw new ConflictException('Email already exists');
+        }
+
+      }),
+      catchError(error => {
+
+        console.error('Error occurred:', error.response.statusCode);
+        if (error.response.statusCode === 404) {
+          return from(this.userService.create(createUserDto))
+        }
+        if (error.response.statusCode === 409) throw new ConflictException('Email already exists');
+        throw new BadRequestException()
+      })
+    );
+
   }
-  /*   
-      @Get()
-      findAll() {
-        return this.reservationsService.findAll();
-      }
-    
-      @Get(':id')
-      findOne(@Param('id') id: string) {
-        return this.reservationsService.findOne(id);
-      }
-    
-      @Patch(':id')
-      update(@Param('id') id: string, @Body() updateReservationDto: UpdateReservationDto) {
-        return this.reservationsService.update(id, updateReservationDto);
-      }
-    
-      @Delete(':id')
-      remove(@Param('id') id: string) {
-        return this.reservationsService.remove(id);
-      } */
+
+
+
+  @Get()
+  findAll(): Observable<UserDto[]> {
+    return from(this.userService.findAll());
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string): Observable<UserDto> {
+    return from(this.userService.findOne(id));
+  }
+
+  @Patch('/email')
+  findOneByEmail(@Body() { email }: CreateUserDto): Observable<UserDto> {
+    return from(this.userService.findOneByEmail(email));
+  }
+
+  @Patch('/filterUser')
+  findAllWithFiltersAndPagination(@Body() filter: UserFilterDto): Observable<UserDto[]> {
+    let { page, limit } = filter;
+    delete filter.page;
+    delete filter.limit;
+    return from(this.userService.findAllWithFiltersAndPagination(filter, page, limit));
+  }
 }

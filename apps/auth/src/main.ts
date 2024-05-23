@@ -23,7 +23,7 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document);
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }))
   app.useLogger(app.get(Logger));
-  console.log(process.env.port);
+  console.log(process.env.AUTHPORT);
 
   await app.listen(process.env.AUTHPORT || 4001);
 }

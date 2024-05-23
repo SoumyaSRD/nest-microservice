@@ -143,4 +143,12 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
             })
         );
     }
+
+    findAllWithFiltersAndPagination(filterQuery: FilterQuery<TDocument>, page: number, limit: number): Observable<TDocument[]> {
+        const skipValue = (page - 1) * limit;
+        return from(this.model.find(filterQuery).skip(skipValue).limit(limit).exec()).pipe(
+            map(docs => docs)
+        );
+    }
 }
+
