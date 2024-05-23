@@ -11,7 +11,7 @@ async function bootstrap() {
     .setTitle('Nest Mongo')
     .setDescription('The Nest Mongo API description')
     .setVersion('1.0')
-    .addTag('nest')
+    .addTag('api')
     .build();
 
   const options: SwaggerDocumentOptions = {

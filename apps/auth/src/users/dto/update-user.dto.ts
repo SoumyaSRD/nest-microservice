@@ -5,7 +5,7 @@ import { v4 } from "uuid";
 
 export class UpdateUserDto extends CreateUserDto {
     @@ApiProperty({
-        description: 'Id', name: 'id', default: () => v4()
+        description: 'Id', name: '_id', default: () => v4()
     })
     @IsNotEmpty()
     @IsString()
