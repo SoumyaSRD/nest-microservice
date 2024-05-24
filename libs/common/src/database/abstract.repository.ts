@@ -2,7 +2,7 @@ import { NotFoundException } from "@nestjs/common";
 import { FilterQuery, Model, Types, UpdateQuery } from "mongoose";
 import { PinoLogger } from "nestjs-pino";
 import { Observable, from, throwError } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { catchError, map, mergeMap } from 'rxjs/operators';
 import { AbstractDocument } from "./abstract.scema";
 
 export abstract class AbstractRepository<TDocument extends AbstractDocument> {
@@ -144,10 +144,26 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
         );
     }
 
-    findAllWithFiltersAndPagination(filterQuery: FilterQuery<TDocument>, page: number, limit: number): Observable<TDocument[]> {
-        const skipValue = (page - 1) * limit;
-        return from(this.model.find(filterQuery).skip(skipValue).limit(limit).exec()).pipe(
-            map(docs => docs)
+    findAllWithFiltersAndPagination(filterQuery: FilterQuery<TDocument>, page: number, limit: number): Observable<any> {
+        const skip = (page - 1) * limit;
+        return from(this.model.find().skip(skip).limit(limit).exec()).pipe(
+            mergeMap(data => from(this.model.countDocuments().exec()).pipe(
+                map(total => {
+                    const lastPage = Math.ceil(total / limit);
+                    const nextPage = page + 1 > lastPage ? null : page + 1;
+                    const prevPage = page - 1 < 1 ? null : page - 1;
+
+                    return {
+                        statusCode: 'success',
+                        data: data,
+                        count: total,
+                        currentPage: page,
+                        nextPage: nextPage,
+                        prevPage: prevPage,
+                        lastPage: lastPage
+                    };
+                })
+            ))
         );
     }
 }

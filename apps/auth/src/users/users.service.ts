@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Observable, from, map } from 'rxjs';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserDto, UserFilterResponseDto } from './dto/create-user.dto';
 import { UserRepository } from './user.repository';
 
 @Injectable()
@@ -33,7 +33,7 @@ export class UsersService {
         return from(this.userRepo.findOne({ email }));
     }
 
-    findAllWithFiltersAndPagination(filter: any, page: number, limit: number) {
+    findAllWithFiltersAndPagination(filter: any, page: number, limit: number): Observable<any> {
         return this.userRepo.findAllWithFiltersAndPagination(filter, page, limit)
     }
 }
