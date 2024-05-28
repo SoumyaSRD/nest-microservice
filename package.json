@@ -1,5 +1,5 @@
 {
-  "name": "sleepr",
+  "name": "nest_demo",
   "version": "0.0.1",
   "description": "",
   "author": "",
@@ -9,19 +9,20 @@
     "build": "nest build",
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "start": "nest start",
+    "start:dev:auth": "npx kill-port 4000 && nest start --watch --port 4000 project=auth",
     "start:dev": "npx kill-port 3000 && nest start --watch",
     "start:debug": "npx kill-port 3000 && nest start --debug --watch",
     "start:development": "NODE_ENV=development nest start",
     "start:development:debug": "npm run start:development --debug --watch",
     "start:production": "NODE_ENV=production nest start",
     "start:production:debug": "npm run start:production --debug --watch",
-    "start:prod": "node dist/apps/sleepr/main",
+    "start:prod": "node dist/apps/reservations/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./apps/sleepr/test/jest-e2e.json"
+    "test:e2e": "jest --config ./apps/reservations/test/jest-e2e.json"
   },
   "dependencies": {
     "@nestjs/common": "^10.3.8",
@@ -30,7 +31,7 @@
     "@nestjs/jwt": "^10.2.0",
     "@nestjs/mapped-types": "*",
     "@nestjs/mongoose": "^10.0.6",
-    "@nestjs/passport": "github:nestjs/passport",
+    "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-express": "^10.3.8",
     "@nestjs/swagger": "^7.3.1",
     "@types/passport-jwt": "^4.0.1",

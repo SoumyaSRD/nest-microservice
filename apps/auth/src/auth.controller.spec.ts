@@ -1,22 +1,45 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import { CustomAuthGuard } from './guards/auth.guard'; // Corrected typo: 'user.scema' to 'user.schema'
+import { DUser } from './decorators/user.decorator';
+import { Response } from 'express';
+import { from } from 'rxjs';
+import { LoginDto } from './users/dto/login.dto';
+import { UserDocument } from './users/models/user.scema';
 
 describe('AuthController', () => {
   let authController: AuthController;
+  let authService: AuthService;
 
   beforeEach(async () => {
-    const app: TestingModule = await Test.createTestingModule({
+    const module: TestingModule = await Test.createTestingModule({
       controllers: [AuthController],
       providers: [AuthService],
     }).compile();
 
-    authController = app.get<AuthController>(AuthController);
+    authController = module.get<AuthController>(AuthController);
+    authService = module.get<AuthService>(AuthService);
   });
 
-  describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(authController.getHello()).toBe('Hello World!');
+  describe('login', () => {
+    it('should call authService.login and send user data in the response', async () => {
+      const mockUser: UserDocument = {
+        email: '',
+        password: '',
+        name: '',
+        createdOn: undefined,
+        modifiedOn: undefined,
+        _id: new ObjectId
+      }; // Replace with your mock user data
+      const mockResponse: Response = {} as Response; // Replace with your mock response
+
+      jest.spyOn(authService, 'login').mockReturnValue(from(Promise.resolve(mockUser)));
+
+      const result = await authController.login(mockUser, mockResponse);
+
+      expect(authService.login).toHaveBeenCalledWith(mockUser, mockResponse);
+      expect(result).toBe(mockUser);
     });
   });
 });

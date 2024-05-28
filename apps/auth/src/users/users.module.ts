@@ -13,6 +13,7 @@ import { UserDocument, UserScema } from './models/user.scema';
     }
   ]),],
   controllers: [UsersController],
-  providers: [UsersService, UserRepository]
+  providers: [UsersService, UserRepository],
+  exports: [UsersService, UserRepository]
 })
 export class UsersModule { }

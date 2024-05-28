@@ -24,3 +24,4 @@ export class UserDocument extends AbstractDocument {
 }
 export const UserScema = SchemaFactory.createForClass(UserDocument)
 
+
