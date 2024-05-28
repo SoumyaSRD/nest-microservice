@@ -1,4 +1,9 @@
-import { ExecutionContext, createParamDecorator } from "@nestjs/common";
-import { UserDocument } from "../users/models/user.scema";
-const getUserByContext = (context: ExecutionContext): UserDocument => context.switchToHttp().getRequest().user
-export const DUser = createParamDecorator((_data: unknown, context: ExecutionContext) => getUserByContext(context)) 
+
+import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+
+export const DUser = createParamDecorator(
+    (data: unknown, ctx: ExecutionContext) => {
+        const request = ctx.switchToHttp().getRequest();
+        return request.user;
+    },
+); 

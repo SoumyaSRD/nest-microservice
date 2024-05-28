@@ -9,27 +9,27 @@ export class UsersService {
     constructor(private readonly userRepo: UserRepository) { }
 
 
-    validateUser(email: string, password: string): Observable<any> {
-        console.error(email, password);
-
-        return from(this.userRepo.findUserByEmail(email)).pipe(
-            switchMap(user => {
-                if (!user) {
-                    throw new UnauthorizedException('User not found');
-                }
-                return from(bcrypt.compare(password, user.password)).pipe(
-                    switchMap(isValidPassword => {
-                        if (!isValidPassword) {
-                            throw new UnauthorizedException('User is Not Valid');
-                        }
-                        return user;
-                    })
-                );
-            }),
-            catchError(error => throwError(() => error))
-        );
-    }
-
+    /*    validateUser(email: string, password: string): Observable<any> {
+           console.error(email, password);
+   
+           return from(this.userRepo.findUserByEmail(email)).pipe(
+               switchMap(user => {
+                   if (!user) {
+                       throw new UnauthorizedException('User not found');
+                   }
+                   return from(bcrypt.compare(password, user.password)).pipe(
+                       switchMap(isValidPassword => {
+                           if (!isValidPassword) {
+                               throw new UnauthorizedException('User is Not Valid');
+                           }
+                           return user;
+                       })
+                   );
+               }),
+               catchError(error => throwError(() => error))
+           );
+       }
+    */
 
     create(createUserDto: CreateUserDto) {
         return from(this.userRepo.create({

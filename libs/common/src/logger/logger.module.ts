@@ -6,11 +6,11 @@ import { LoggerModule } from 'nestjs-pino';
             pinoHttp: {
                 transport: {
                     targets: [
-                        {
-                            level: 'info',
-                            target: 'pino-pretty',
-                            options: { singleLine: true },
-                        },
+                        // {
+                        //     level: 'info',
+                        //     target: 'pino-pretty',
+                        //     options: { singleLine: true },
+                        // },
                         {
                             level: 'trace',
                             target: 'pino/file',

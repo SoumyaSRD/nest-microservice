@@ -1,11 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
-import { CustomAuthGuard } from './guards/auth.guard'; // Corrected typo: 'user.scema' to 'user.schema'
-import { DUser } from './decorators/user.decorator';
 import { Response } from 'express';
 import { from } from 'rxjs';
-import { LoginDto } from './users/dto/login.dto';
+import { AuthController } from './auth.controller';
+import { AuthService } from './auth.service';
 import { UserDocument } from './users/models/user.scema';
 
 describe('AuthController', () => {
@@ -24,13 +21,13 @@ describe('AuthController', () => {
 
   describe('login', () => {
     it('should call authService.login and send user data in the response', async () => {
-      const mockUser: UserDocument = {
+      const mockUser: UserDocument | any = {
         email: '',
         password: '',
         name: '',
         createdOn: undefined,
         modifiedOn: undefined,
-        _id: new ObjectId
+        _id: ''
       }; // Replace with your mock user data
       const mockResponse: Response = {} as Response; // Replace with your mock response
 
