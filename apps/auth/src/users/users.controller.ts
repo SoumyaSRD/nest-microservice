@@ -8,7 +8,7 @@ import {
   Patch,
   Post
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { Observable, catchError, from, map } from 'rxjs';
 import { CreateUserDto, FilterResponseDto, UserDto, UserFilterDto } from './dto/create-user.dto';
 import { UsersService } from './users.service';
@@ -58,7 +58,10 @@ export class UsersController {
   }
 
   @Patch('/filterUser')
-  findAllWithFiltersAndPagination(@Body() filter: UserFilterDto): Observable<any> {
+  @ApiBody({
+    type: UserFilterDto
+  })
+  findAllWithFiltersAndPagination(@Body() filter: Partial<UserFilterDto>): Observable<any> {
     let { page, limit } = filter;
     delete filter.page;
     delete filter.limit;
