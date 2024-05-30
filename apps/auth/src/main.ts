@@ -25,6 +25,6 @@ async function bootstrap() {
   app.useLogger(app.get(Logger));
   console.log(">>>Auth>>", process.env.AUTH_PORT);
 
-  await app.listen(process.env.AUTHPORT || 4000);
+  await app.listen(process.env.AUTH_PORT || 3005);
 }
 bootstrap();

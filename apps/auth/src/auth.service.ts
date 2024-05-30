@@ -1,17 +1,25 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { Response } from 'express';
-import { UserDocument } from './users/models/user.scema';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcrypt';
+import { Response } from 'express';
 import { Observable, catchError, from, map, of, switchMap, tap, throwError } from 'rxjs';
-import * as bcrypt from 'bcrypt'
+import { UserDocument } from './users/models/user.scema';
 import { UserRepository } from './users/user.repository';
+import { CreateUserDto } from './users/dto/create-user.dto';
 
 @Injectable()
 export class AuthService {
+
   constructor(private configService: ConfigService, private jwtService: JwtService, private readonly userRepo: UserRepository) {
 
   }
+
+
+  getUser(user): Observable<string> {
+    return this.userRepo.find(user.id);
+  }
+
 
   /**
    * The function `validateUser` takes an email and password, checks if the user exists and if the
@@ -32,40 +40,41 @@ export class AuthService {
    * 4. Compares the provided
    */
 
-  validateUser(email: string, pass: string): Observable<any> {
-    // Use RxJS to handle asynchronous user validation
-    return from(this.userRepo.findUserByEmail(email)).pipe(
-      map((user) => {
-        if (user && bcrypt.compare(pass, user.password)) {
-          const { password, ...result } = user;
-          return result;
-        }
-        return null;
-      })
-    );
-  }
-  /*   validateUser(email: string, password: string): Observable<any> {
-      console.error(email, password);
-  
+  /*   validateUser(email: string, pass: string): Observable<any> {
+      // Use RxJS to handle asynchronous user validation
       return from(this.userRepo.findUserByEmail(email)).pipe(
-        switchMap(user => {
-          console.log("user", user);
-  
-          if (!user) {
-            throw new UnauthorizedException('User not found');
+        map((user) => {
+          if (user && bcrypt.compare(pass, user.password)) {
+            const { password, ...result } = user;
+            return result;
           }
-          return from(bcrypt.compare(password, user.password)).pipe(
-            switchMap(isValidPassword => {
-              if (!isValidPassword) {
-                throw new UnauthorizedException('User is Not Valid');
-              }
-              return user;
-            })
-          );
-        }),
-        catchError(error => throwError(() => error))
+          throw new UnauthorizedException('User not found');
+        })
       );
     } */
+  validateUser(email: string, password: string): Observable<any> {
+    console.error("line 55 auth service", email, password);
+
+    return from(this.userRepo.findUserByEmail(email)).pipe(
+      switchMap(user => {
+        console.log("user", user);
+
+
+        if (!user) {
+          throw new UnauthorizedException('User not found');
+        }
+        return from(bcrypt.compare(password, user.password)).pipe(
+          switchMap(isValidPassword => {
+            if (!isValidPassword) {
+              throw new UnauthorizedException('User is Not Valid');
+            }
+            return user;
+          })
+        );
+      }),
+      catchError(error => throwError(() => error))
+    );
+  }
 
   /**  
    * @description: Method description Below
@@ -82,10 +91,11 @@ export class AuthService {
    * Setting the expiration time for the cookie.
    * Setting a cookie on the response object with the signed JWT token. 
   **/
-  login(user: UserDocument, response: Response<any>) {
+  login(user: any, response: Response<any>) {
     const tokenPayload = {
-      userId: user._id
+      id: user._id
     };
+    console.log(tokenPayload, user);
 
     return of(tokenPayload).pipe(
       switchMap(payload => {
@@ -103,6 +113,19 @@ export class AuthService {
     );
   }
 
+  create(createUserDto: CreateUserDto) {
+    return from(this.userRepo.create({
+      ...createUserDto,
+      password: bcrypt.hashSync(createUserDto.password, 10),
+      createdOn: new Date(),
+      modifiedOn: new Date()
+    })).pipe(
+      map(res => {
+        delete res.password;
+        return res;
+      })
+    );
+  }
 
 
 }

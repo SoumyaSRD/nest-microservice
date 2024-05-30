@@ -1,18 +1,29 @@
 import { CustomLoggerModule } from '@app/common';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { UsersModule } from './users/users.module';
-import { PassportModule } from '@nestjs/passport';
-import { JwtModule } from '@nestjs/jwt';
-import { LocalStrategy } from './startegies/startergy';
-import { JwtStrategy } from './startegies/jwt.strategy';
-import { APP_GUARD } from '@nestjs/core';
+import { LocalAuthGuard } from './guards/auth.guard';
 import { JwtGuard } from './guards/jwt.guard';
+import { LocalStrategy } from './startegies/startergy';
+import { UsersModule } from './users/users.module';
+import { JwtStrategy } from './startegies/jwt.strategy';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 @Module({
   imports: [
-
+    ClientsModule.register([
+      {
+        name: 'SReservation',
+        transport: Transport.TCP,
+        options: {
+          host: 'localhost',
+          port: 3010,
+        },
+      },
+    ]),
     CustomLoggerModule,
     PassportModule,
     JwtModule.registerAsync({
@@ -29,16 +40,12 @@ import { JwtGuard } from './guards/jwt.guard';
     UsersModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, LocalStrategy, JwtStrategy, {
+  providers: [AuthService, LocalStrategy, LocalAuthGuard, JwtStrategy, {
     provide: APP_GUARD,
     useClass: JwtGuard,
   },
-    JwtStrategy,],
+  ],
   exports: [AuthService, JwtModule]
 })
 export class AuthModule {
-  /*   constructor(private configService: ConfigService) {
-      console.log(this.configService.get('JWT_SECRET'));
-  
-    } */
 }

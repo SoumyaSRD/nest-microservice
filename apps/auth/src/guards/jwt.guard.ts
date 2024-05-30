@@ -1,6 +1,8 @@
 import { ExecutionContext, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
+import { ExtractJwt } from 'passport-jwt';
 import { Observable, from as observableFrom } from 'rxjs';
 
 @Injectable()
@@ -8,20 +10,14 @@ export class JwtGuard extends AuthGuard('jwt') {
     constructor(private reflector: Reflector) {
         super();
     }
-
     canActivate(
         context: ExecutionContext,
-    ): Observable<boolean> {
-        const isPublic = this.reflector.getAllAndOverride<boolean>('isPublic', [
+    ): Promise<boolean> | boolean | Observable<boolean> {
+        const isPublic = this.reflector.getAllAndOverride('isPublic', [
             context.getHandler(),
             context.getClass(),
         ]);
-
-        if (isPublic) {
-            return observableFrom([true]);
-        } else {
-            // Use 'from' to convert a Promise to an Observable
-            return observableFrom(super.canActivate(context) as Promise<boolean>);
-        }
+        if (isPublic) return true;
+        return super.canActivate(context);
     }
 }

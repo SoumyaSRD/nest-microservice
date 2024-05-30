@@ -3,8 +3,8 @@ import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { PinoLogger } from "nestjs-pino";
-import { UserDocument } from "./models/user.scema";
 import { Observable, from } from "rxjs";
+import { UserDocument } from "./models/user.scema";
 
 @Injectable()
 export class UserRepository extends AbstractRepository<UserDocument> {
@@ -16,7 +16,7 @@ export class UserRepository extends AbstractRepository<UserDocument> {
     }
 
     findUserByEmail(email): Observable<any> {
-        return from(this.userModel.findById({ email }).select('+password').exec())
+        return from(this.userModel.findOne({ email }).select('+password').exec())
     }
 
 }

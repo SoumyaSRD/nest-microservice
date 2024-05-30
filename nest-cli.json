@@ -1,11 +1,11 @@
 {
   "$schema": "https://json.schemastore.org/nest-cli",
   "collection": "@nestjs/schematics",
-  "sourceRoot": "apps/reservations/src",
+  "sourceRoot": "apps/auth/src",
   "compilerOptions": {
     "deleteOutDir": true,
     "webpack": true,
-    "tsConfigPath": "apps/reservations/tsconfig.app.json"
+    "tsConfigPath": "apps/auth/tsconfig.app.json"
   },
   "projects": {
     "common": {
@@ -37,5 +37,5 @@
     }
   },
   "monorepo": true,
-  "root": "apps/reservations"
+  "root": "apps/auth"
 }

@@ -2,7 +2,7 @@ import { AbstractDocument } from "@app/common";
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Exclude } from "class-transformer";
 
-@Schema({ versionKey: false })
+@Schema({ versionKey: false, collection: 'user' })
 export class UserDocument extends AbstractDocument {
     @Prop()
     email: string
@@ -22,6 +22,7 @@ export class UserDocument extends AbstractDocument {
 
 
 }
+
 export const UserScema = SchemaFactory.createForClass(UserDocument)
 
 

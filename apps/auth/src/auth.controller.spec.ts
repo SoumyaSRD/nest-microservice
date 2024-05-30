@@ -21,7 +21,7 @@ describe('AuthController', () => {
 
   describe('login', () => {
     it('should call authService.login and send user data in the response', async () => {
-      const mockUser: UserDocument | any = {
+      const mockUser: any = {
         email: '',
         password: '',
         name: '',

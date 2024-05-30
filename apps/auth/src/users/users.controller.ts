@@ -12,34 +12,18 @@ import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { Observable, catchError, from, map } from 'rxjs';
 import { CreateUserDto, FilterResponseDto, UserDto, UserFilterDto } from './dto/create-user.dto';
 import { UsersService } from './users.service';
+import { IuserService } from './user-interface/UserServiceInterfaces/IUserService';
+import { DUser } from '../decorators/user.decorator';
+import { Public } from '../decorators/public.decorator';
 
 @Controller('users')
 @ApiTags('users')
 export class UsersController {
-  constructor(private readonly userService: UsersService) { }
 
-  @Post()
-  create(@Body() createUserDto: CreateUserDto): Observable<UserDto | any> {
-    return this.userService.findOneByEmail(createUserDto.email).pipe(
-      map(foundUser => {
-        if (foundUser?.email) {
-          throw new ConflictException('Email already exists');
-        }
-
-      }),
-      catchError(error => {
-
-        console.error('Error occurred:', error.response.statusCode);
-        if (error.response.statusCode === 404) {
-          return from(this.userService.create(createUserDto))
-        }
-        if (error.response.statusCode === 409) throw new ConflictException('Email already exists');
-        throw new BadRequestException()
-      })
-    );
-
+  isuerService: IuserService;
+  constructor(private readonly userService: UsersService) {
+    this.isuerService = userService;
   }
-
 
 
   @Get()
