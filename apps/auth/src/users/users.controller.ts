@@ -1,7 +1,5 @@
 import {
-  BadRequestException,
   Body,
-  ConflictException,
   Controller,
   Get,
   Param,
@@ -9,11 +7,10 @@ import {
   Post
 } from '@nestjs/common';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
-import { Observable, catchError, from, map } from 'rxjs';
-import { CreateUserDto, FilterResponseDto, UserDto, UserFilterDto } from './dto/create-user.dto';
-import { UsersService } from './users.service';
+import { Observable, from } from 'rxjs';
+import { CreateUserDto, UserDto, UserFilterDto } from './dto/create-user.dto';
 import { IuserService } from './user-interface/UserServiceInterfaces/IUserService';
-import { DUser } from '../decorators/user.decorator';
+import { UsersService } from './users.service';
 import { Public } from '../decorators/public.decorator';
 
 @Controller('users')
@@ -24,7 +21,6 @@ export class UsersController {
   constructor(private readonly userService: UsersService) {
     this.isuerService = userService;
   }
-
 
   @Get()
   findAll(): Observable<UserDto[]> {

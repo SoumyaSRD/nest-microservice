@@ -45,7 +45,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
     useClass: JwtGuard,
   },
   ],
-  exports: [AuthService, JwtModule]
+  exports: [JwtModule]
 })
 export class AuthModule {
 }

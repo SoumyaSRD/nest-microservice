@@ -40,12 +40,11 @@ export class AuthController {
     type: LoginDto,
   })
   login(@DUser() user, @Res({ passthrough: true }) response: Response) {
-    console.log('classToPlain(user)', user);
 
     return from(this.authService.login(user, response));
   }
 
-  @Post()
+  @Post('register')
   create(@Body() createUserDto: CreateUserDto): Observable<UserDto | any> {
     return from(this.authService.create(createUserDto));
   }

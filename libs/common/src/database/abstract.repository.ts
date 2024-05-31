@@ -48,9 +48,9 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
      * `NotFoundException
      */
     findOne<TDocument>(
-        filterQuery: FilterQuery<TDocument>,
+        filterQuery: FilterQuery<TDocument>, includeKey = ''
     ): Observable<TDocument | any> {
-        return from(this.model.findOne(filterQuery).lean<TDocument>(true)).pipe(
+        return from((includeKey ? this.model.findOne(filterQuery).select(`+${includeKey}`) : this.model.findOne(filterQuery)).lean<TDocument>(true)).pipe(
             map((document) => {
                 if (!document) {
                     throw new NotFoundException('Document was not found');

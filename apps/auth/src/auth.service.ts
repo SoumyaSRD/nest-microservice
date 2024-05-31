@@ -33,44 +33,20 @@ export class AuthService {
     return this.userRepo.find(user.id);
   }
 
-  /**
-   * The function `validateUser` takes an email and password, checks if the user exists and if the
-   * password is valid, and returns an Observable with the user data or throws an
-   * UnauthorizedException.
-   * @param {string} email - The `validateUser` function takes in an email and a password as
-   * parameters. The function then attempts to find a user in the user repository based on the provided
-   * email. If the user is found, it compares the provided password with the user's password using
-   * bcrypt for validation. If the password is valid
-   * @param {string} password - The `validateUser` function takes an email and a password as
-   * parameters. The password is a string that represents the user's password that needs to be
-   * validated.
-   * @returns The `validateUser` function returns an Observable that performs the following steps:
-   * 1. Logs the email and password to the console.
-   * 2. Calls the `findUserByEmail` method of `userRepo` to find a user by email.
-   * 3. Checks if the user exists, and if not, throws an `UnauthorizedException` with the message 'User
-   * not found'.
-   * 4. Compares the provided
-   */
 
   validateUser(email: string, password: string): Observable<any> {
-    console.error('line 55 auth service', email, password);
-
-    return from(this.userRepo.findUserByEmail(email)).pipe(
-      switchMap((user) => {
-        console.log('user', user);
-
+    return from(this.userRepo.findOne({ email }, 'password')).pipe(
+      switchMap(async (user) => {
         if (!user) {
           throw new UnauthorizedException('User not found');
         }
-        return from(bcrypt.compare(password, user.password)).pipe(
-          switchMap((isValidPassword) => {
-            if (!isValidPassword) {
-              throw new UnauthorizedException('User is Not Valid');
-            }
-            return user;
-          }),
-        );
+        let isValidPassword = await bcrypt.compareSync(password, user.password)
+        if (!isValidPassword) {
+          throw new UnauthorizedException('User is Not Valid');
+        }
+        return user;
       }),
+
       catchError((error) => throwError(() => error)),
     );
   }
@@ -91,10 +67,12 @@ export class AuthService {
    * Setting a cookie on the response object with the signed JWT token.
    **/
   login(user: any, response: Response<any>) {
+
     const tokenPayload = {
       id: user._id,
+      email: user.email,
+      name: user.name
     };
-    console.log(tokenPayload, user);
 
     return of(tokenPayload).pipe(
       switchMap((payload) => {
@@ -114,35 +92,36 @@ export class AuthService {
     );
   }
 
-
   create(createUserDto: CreateUserDto) {
-    return this.userRepo.findUserByEmail(createUserDto.email).pipe(
-      map((foundUser) => {
-        if (foundUser?.email) {
-          throw new ConflictException('Email already exists');
-        }
-      }),
-      catchError((error) => {
-        console.error('Error occurred:', error.response.statusCode);
-        if (error.response.statusCode === 404) {
-          return from(
-            this.userRepo.create({
-              ...createUserDto,
-              password: bcrypt.hashSync(createUserDto.password, 10),
-              createdOn: new Date(),
-              modifiedOn: new Date(),
-            }),
-          ).pipe(
-            map((res) => {
-              delete res.password;
-              return res;
-            }),
-          );
-        }
-        if (error.response.statusCode === 409)
-          throw new ConflictException('Email already exists');
-        throw new BadRequestException();
-      }),
-    );
+    return this.userRepo
+      .findOne({ email: createUserDto.email }, 'password')
+      .pipe(
+        map((foundUser) => {
+
+          if (foundUser?.email) {
+            throw new ConflictException('Email already exists');
+          }
+        }),
+        catchError((error) => {
+          if (error.response.statusCode === 404) {
+            return from(
+              this.userRepo.create({
+                ...createUserDto,
+                password: bcrypt.hashSync(createUserDto.password, 10),
+                createdOn: new Date(),
+                modifiedOn: new Date(),
+              }),
+            ).pipe(
+              map((res) => {
+                delete res.password;
+                return res;
+              }),
+            );
+          }
+          if (error.response.statusCode === 409)
+            throw new ConflictException('Email already exists');
+          throw new BadRequestException();
+        }),
+      );
   }
 }
