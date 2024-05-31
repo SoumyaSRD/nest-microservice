@@ -4,14 +4,16 @@ import {
   Get,
   Param,
   Patch,
-  Post
+  Post,
+  UseGuards
 } from '@nestjs/common';
-import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { Observable, from } from 'rxjs';
 import { CreateUserDto, UserDto, UserFilterDto } from './dto/create-user.dto';
 import { IuserService } from './user-interface/UserServiceInterfaces/IUserService';
 import { UsersService } from './users.service';
 import { Public } from '../decorators/public.decorator';
+import { JwtGuard } from '../guards/jwt.guard';
 
 @Controller('users')
 @ApiTags('users')
@@ -21,7 +23,8 @@ export class UsersController {
   constructor(private readonly userService: UsersService) {
     this.isuerService = userService;
   }
-
+  @UseGuards(JwtGuard)
+  @ApiBearerAuth()
   @Get()
   findAll(): Observable<UserDto[]> {
     return from(this.userService.findAll());

@@ -40,7 +40,7 @@ export class AuthService {
         if (!user) {
           throw new UnauthorizedException('User not found');
         }
-        let isValidPassword = await bcrypt.compareSync(password, user.password)
+        let isValidPassword = await bcrypt.compare(password, user.password)
         if (!isValidPassword) {
           throw new UnauthorizedException('User is Not Valid');
         }
@@ -102,12 +102,12 @@ export class AuthService {
             throw new ConflictException('Email already exists');
           }
         }),
-        catchError((error) => {
+        catchError(async (error) => {
           if (error.response.statusCode === 404) {
             return from(
               this.userRepo.create({
                 ...createUserDto,
-                password: bcrypt.hashSync(createUserDto.password, 10),
+                password: await bcrypt.hash(createUserDto.password, 10),
                 createdOn: new Date(),
                 modifiedOn: new Date(),
               }),

@@ -26,23 +26,23 @@ import { LoggerModule } from 'nestjs-pino';
                         },
                     ],
                 },
-                customLogLevel: (res, err) => {
-                    if (res.statusCode >= 400 && res.statusCode < 500) {
-                        return 'warn';
-                    } else if (res.statusCode >= 500 || err) {
-                        return 'error';
-                    }
-                    return 'info';
-                },
-                customSuccessMessage: (res) => {
-                    if (res.statusCode === 200) {
-                        return 'Success';
-                    }
-                    return 'Request completed';
-                },
-                customErrorMessage: (err, res) => {
-                    return `Error with status code: ${res.statusCode}`;
-                },
+                /*  customLogLevel: (res, err) => {
+                     if (res.statusCode >= 400 && res.statusCode < 500) {
+                         return 'warn';
+                     } else if (res.statusCode >= 500 || err) {
+                         return 'error';
+                     }
+                     return 'info';
+                 },
+                 customSuccessMessage: (res) => {
+                     if (res.statusCode === 200) {
+                         return 'Success';
+                     }
+                     return 'Request completed';
+                 },
+                 customErrorMessage: (err, res) => {
+                     return `Error with status code: ${res.statusCode}`;
+                 }, */
             },
         }),
     ],
