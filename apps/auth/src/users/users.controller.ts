@@ -4,16 +4,14 @@ import {
   Get,
   Param,
   Patch,
-  Post,
   UseGuards
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { Observable, from } from 'rxjs';
+import { JwtGuard } from '../guards/jwt.guard';
 import { CreateUserDto, UserDto, UserFilterDto } from './dto/create-user.dto';
 import { IuserService } from './user-interface/UserServiceInterfaces/IUserService';
 import { UsersService } from './users.service';
-import { Public } from '../decorators/public.decorator';
-import { JwtGuard } from '../guards/jwt.guard';
 
 @Controller('users')
 @ApiTags('users')

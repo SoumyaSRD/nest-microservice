@@ -1,8 +1,8 @@
-import { NestFactory } from '@nestjs/core';
-import { AuthModule } from './auth.module';
 import { ValidationPipe } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerDocumentOptions, SwaggerModule } from '@nestjs/swagger';
 import { Logger } from 'nestjs-pino';
+import { AuthModule } from './auth.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AuthModule);
@@ -33,6 +33,13 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document);
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }))
   app.useLogger(app.get(Logger));
+  app.enableCors({  // wrong!  in my case, anyway
+    origin: '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    allowedHeaders: 'Content-Type, Accept',
+    credentials: true,
+  });
+
 
   await app.listen(process.env.AUTH_PORT || 3005);
 }

@@ -1,23 +1,21 @@
 import {
-  BadRequestException,
   Body,
-  ConflictException,
   Controller,
   Get,
   Post,
   Request,
   Res,
-  UseGuards,
+  UseGuards
 } from '@nestjs/common';
 import { ApiBody } from '@nestjs/swagger';
 import { Response } from 'express';
-import { Observable, catchError, from, map } from 'rxjs';
+import { Observable, from } from 'rxjs';
 import { AuthService } from './auth.service';
 import { Public } from './decorators/public.decorator';
 import { DUser } from './decorators/user.decorator';
 import { LocalAuthGuard } from './guards/auth.guard';
-import { LoginDto } from './users/dto/login.dto';
 import { CreateUserDto, UserDto } from './users/dto/create-user.dto';
+import { LoginDto } from './users/dto/login.dto';
 import { UsersService } from './users/users.service';
 
 @Public()
