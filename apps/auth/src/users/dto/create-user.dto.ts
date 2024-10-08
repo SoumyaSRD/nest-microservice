@@ -1,4 +1,3 @@
-import { OmitType } from '@nestjs/mapped-types';
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude, Type } from 'class-transformer';
 import {
@@ -53,6 +52,13 @@ export class CreateUserDto {
 }
 
 export class UserDto extends CreateUserDto {
+    @ApiProperty({
+        description: 'Email id',
+        name: 'email',
+        default: 'john@email.com',
+    })
+    @IsString()
+    _id: string
     @Exclude({ toPlainOnly: true, toClassOnly: true })
     password: string;
 }

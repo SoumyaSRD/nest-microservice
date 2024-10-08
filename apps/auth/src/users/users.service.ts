@@ -1,10 +1,10 @@
 import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 import { Observable, catchError, from, map } from 'rxjs';
+import { CreateUserDto, UserDto } from './dto/create-user.dto';
 import { IUserRepository } from './user-interface/IUserRepoInterfaces/IUserRepo';
 import { IuserService } from './user-interface/UserServiceInterfaces/IUserService';
 import { UserRepository } from './user.repository';
-import { CreateUserDto } from './dto/create-user.dto';
-import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService implements IuserService {
@@ -72,5 +72,13 @@ export class UsersService implements IuserService {
 
     findAllWithFiltersAndPagination(filter: any, page: number, limit: number): Observable<any> {
         return this.userRepo.findAllWithFiltersAndPagination(filter, page, limit)
+    }
+
+    updateUser(user: UserDto) {
+        return this.userRepo.findOneAndUpdate({ _id: user._id }, user)
+    }
+
+    deleteUser(_id: string) {
+        return this.userRepo.findOneAndDelete({ _id })
     }
 }

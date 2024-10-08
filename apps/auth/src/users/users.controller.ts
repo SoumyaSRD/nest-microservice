@@ -1,14 +1,14 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
-  UseGuards
+  Put
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { Observable, from } from 'rxjs';
-import { JwtGuard } from '../guards/jwt.guard';
 import { CreateUserDto, UserDto, UserFilterDto } from './dto/create-user.dto';
 import { IuserService } from './user-interface/UserServiceInterfaces/IUserService';
 import { UsersService } from './users.service';
@@ -26,6 +26,16 @@ export class UsersController {
   @Get()
   findAll(): Observable<UserDto[]> {
     return from(this.userService.findAll());
+  }
+
+  @Delete(':id')
+  findOneAndDelete(@Param('id') id: string): Observable<UserDto> {
+    return from(this.userService.deleteUser(id));
+  }
+
+  @Put('/')
+  findOneAndUpdate(@Body() user: UserDto): Observable<UserDto> {
+    return from(this.userService.updateUser(user));
   }
 
   @Get(':id')
