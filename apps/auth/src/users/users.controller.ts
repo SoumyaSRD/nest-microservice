@@ -10,42 +10,44 @@ import {
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { Observable, from } from 'rxjs';
 import { CreateUserDto, UserDto, UserFilterDto } from './dto/create-user.dto';
-import { IuserService } from './user-interface/UserServiceInterfaces/IUserService';
+import { IuserService as IUserService } from './user-interface/UserServiceInterfaces/IUserService';
 import { UsersService } from './users.service';
 
 @Controller('users')
 @ApiTags('users')
 export class UsersController {
 
-  isuerService: IuserService;
+  private readonly iUserService: IUserService;
+
   constructor(private readonly userService: UsersService) {
-    this.isuerService = userService;
+    this.iUserService = this.userService;
   }
-  @UseGuards(JwtGuard)
-  @ApiBearerAuth()
+
+  // @UseGuards(JwtGuard)
+  // @ApiBearerAuth()
   @Get()
-  findAll(): Observable<UserDto[]> {
-    return from(this.userService.findAll());
+  findAll(): Observable<any> {
+    return from(this.iUserService.findAll());
   }
 
   @Delete(':id')
   findOneAndDelete(@Param('id') id: string): Observable<UserDto> {
-    return from(this.userService.deleteUser(id));
+    return from(this.iUserService.deleteUser(id));
   }
 
   @Put('/')
   findOneAndUpdate(@Body() user: UserDto): Observable<UserDto> {
-    return from(this.userService.updateUser(user));
+    return from(this.iUserService.updateUser(user));
   }
 
   @Get(':id')
   findOne(@Param('id') id: string): Observable<UserDto> {
-    return from(this.userService.findOne(id));
+    return from(this.iUserService.findOne(id));
   }
 
   @Patch('/email')
   findOneByEmail(@Body() { email }: CreateUserDto): Observable<UserDto> {
-    return from(this.userService.findOneByEmail(email));
+    return from(this.iUserService.findOneByEmail(email));
   }
 
   @Patch('/filterUser')
@@ -53,9 +55,9 @@ export class UsersController {
     type: UserFilterDto
   })
   findAllWithFiltersAndPagination(@Body() filter: Partial<UserFilterDto>): Observable<any> {
-    let { page, limit } = filter;
+    const { page, limit } = filter;
     delete filter.page;
     delete filter.limit;
-    return from(this.userService.findAllWithFiltersAndPagination(filter, page, limit));
+    return from(this.iUserService.findAllWithFiltersAndPagination(filter, page, limit));
   }
 }

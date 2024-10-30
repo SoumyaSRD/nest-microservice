@@ -104,19 +104,20 @@ export class AuthService {
         }),
         catchError(async (error) => {
           if (error.response.statusCode === 404) {
-            return from(
+            let data = from(
               this.userRepo.create({
                 ...createUserDto,
                 password: await bcrypt.hash(createUserDto.password, 10),
                 createdOn: new Date(),
                 modifiedOn: new Date(),
-              }),
-            ).pipe(
-              map((res) => {
-                delete res.password;
-                return res;
-              }),
-            );
+              })
+            )
+            return {
+              data,
+              message: 'User Created Successfully'
+            }
+
+
           }
           if (error.response.statusCode === 409)
             throw new ConflictException('Email already exists');

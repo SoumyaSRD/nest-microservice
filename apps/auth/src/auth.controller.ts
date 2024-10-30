@@ -19,7 +19,7 @@ import { LoginDto } from './users/dto/login.dto';
 import { UsersService } from './users/users.service';
 
 @Public()
-@Controller()
+@Controller('auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,

@@ -36,6 +36,8 @@ async function bootstrap() {
   app.enableCors();
 
 
+  console.log('AUTH_PORT', process.env.AUTH_PORT);
+
   await app.listen(process.env.AUTH_PORT || 3005);
 }
 bootstrap();

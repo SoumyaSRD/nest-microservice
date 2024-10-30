@@ -1,5 +1,7 @@
 import { ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import {
   DocumentBuilder,
   SwaggerDocumentOptions,
@@ -7,8 +9,6 @@ import {
 } from '@nestjs/swagger';
 import { Logger } from 'nestjs-pino';
 import { ReservationsModule } from './reservations.module';
-import { MicroserviceOptions, Transport } from '@nestjs/microservices';
-import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(ReservationsModule);
@@ -36,7 +36,8 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.useLogger(app.get(Logger));
   console.log(process.env.port);
+  console.log('AUTH_PORT', process.env.AUTH_PORT);
 
-  await app.listen(PORT || 3005);
+  await app.listen(PORT || 3010);
 }
 bootstrap();

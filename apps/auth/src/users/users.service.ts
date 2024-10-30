@@ -58,7 +58,7 @@ export class UsersService implements IuserService {
         ));
     }
 
-    findAll(): Observable<any> {
+    findAll(): Observable<UserDto[]> {
         return from(this.userRepo.find({}));
     }
 
