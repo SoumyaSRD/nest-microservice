@@ -179,25 +179,71 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
 
     findAllWithFiltersAndPagination(
         filterQuery: FilterQuery<TDocument>,
-        page: number,
-        limit: number,
+        page = 1,
+        limit = 10,
+        caseSensitiveData = {},
+        lookups = []
     ): Observable<any> {
         const skip = (page - 1) * limit;
-        const pipeline = [
+
+
+
+
+        const query = Object.keys(filterQuery).reduce((acc, param) => {
+            acc[param] = caseSensitiveData[param]
+                ? { $eq: filterQuery[param] }
+                : { $regex: filterQuery[param], $options: "i" }; //i is used for case insensitive
+            //  { $regex: `^${filterQuery[param]}$`, $options: "i" }; //return exact match
+
+            return acc;
+        }, {});
+
+
+
+        /*     const pipeline = [
+                {
+                    $facet: {
+                        paginatedResults: [
+                            { $match: filterQuery },
+                            { $skip: skip },
+                            { $limit: limit },
+                        ],
+                        totalCount: [{ $match: filterQuery }, { $count: 'count' }],
+                    },
+                },
+            ]; */
+
+        // Base aggregation pipeline
+        const pipeline: any = [
+            { $match: query },
+            ...lookups.map((lookup) => ({
+                $lookup: {
+                    from: lookup.from,
+                    localField: lookup.localField,
+                    foreignField: Array.isArray(lookup.foreignField)
+                        ? { $in: lookup.foreignField }
+                        : lookup.foreignField,
+                    as: lookup.as,
+                    pipeline: lookup.pipeline || [], // Nested pipeline for child lookups
+                },
+            })),
+
             {
                 $facet: {
-                    paginatedResults: [
-                        { $match: filterQuery },
+                    data: [
+                        { $sort: { updatedAt: -1 } },
                         { $skip: skip },
                         { $limit: limit },
                     ],
-                    totalCount: [{ $match: filterQuery }, { $count: 'count' }],
+                    totalCount: [{ $count: "count" }],
                 },
             },
         ];
+
+
         return from(this.model.aggregate(pipeline)).pipe(
             map(([result]) => ({
-                data: result.paginatedResults,
+                data: result.data,
                 total: result.totalCount[0].count,
             })),
         );
