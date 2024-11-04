@@ -70,7 +70,7 @@ export class UsersService implements IuserService {
         return from(this.iuserRepo.findOne({ email }))
     }
 
-    findAllWithFiltersAndPagination(filter: any, page: number, limit: number): Observable<any> {
+    findAllWithFiltersAndPagination(filter: any, page: number, limit: number): Observable<UserDto[]> {
         return this.userRepo.findAllWithFiltersAndPagination(filter, page, limit)
     }
 

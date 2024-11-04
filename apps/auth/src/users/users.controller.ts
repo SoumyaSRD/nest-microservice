@@ -54,10 +54,8 @@ export class UsersController {
   @ApiBody({
     type: UserFilterDto
   })
-  findAllWithFiltersAndPagination(@Body() filter: Partial<UserFilterDto>): Observable<any> {
-    const { page, limit } = filter;
-    delete filter.page;
-    delete filter.limit;
-    return from(this.iUserService.findAllWithFiltersAndPagination(filter, page, limit));
+  findAllWithFiltersAndPagination(@Body() filter: Partial<UserFilterDto>): Observable<UserDto[]> {
+    const { page, limit, ...rest } = filter;
+    return from(this.iUserService.findAllWithFiltersAndPagination(rest, page, limit));
   }
 }

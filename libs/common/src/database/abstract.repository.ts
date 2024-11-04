@@ -48,9 +48,15 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
      * `NotFoundException
      */
     findOne<TDocument>(
-        filterQuery: FilterQuery<TDocument>, includeKey = ''
+        filterQuery: FilterQuery<TDocument>,
+        includeKey = '',
     ): Observable<TDocument | any> {
-        return from((includeKey ? this.model.findOne(filterQuery).select(`+${includeKey}`) : this.model.findOne(filterQuery)).lean<TDocument>(true)).pipe(
+        return from(
+            (includeKey
+                ? this.model.findOne(filterQuery).select(`+${includeKey}`)
+                : this.model.findOne(filterQuery)
+            ).lean<TDocument>(true),
+        ).pipe(
             map((document) => {
                 if (!document) {
                     throw new NotFoundException('Document was not found');
@@ -173,47 +179,33 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
         );
     }
 
-    /* The `findAllWithFiltersAndPagination` method in the `AbstractRepository` class is responsible for
-      performing a paginated search with filters using MongoDB aggregation framework. Here's a breakdown
-      of what the method is doing: */
-
+    /**
+     * The function `findAllWithFiltersAndPagination` retrieves data based on filters and pagination parameters, including case sensitivity and lookups, and returns the result with data and total count.
+     * @param filterQuery - The `filterQuery` parameter is an object that contains the filtering criteria for the data you want to retrieve. It typically includes key-value pairs where the key represents the field to filter on and the value represents the filter value.
+     * @param [page=1] - The `page` parameter in the `findAllWithFiltersAndPagination` function is used to specify the page number of results to retrieve. It determines which page of results to return based on the specified limit of items per page.
+     * @param [limit=10] - The `limit` parameter in the `findAllWithFiltersAndPagination` function specifies the maximum number of documents that should be returned per page. By default, it is set to 10, meaning that the function will return up to 10 documents per page unless specified otherwise.
+     * @param caseSensitiveData - The `caseSensitiveData` parameter in the `findAllWithFiltersAndPagination` function is an object that allows you to specify which fields in the filter query should be treated as case-sensitive during the search operation.
+     * @param lookups - The `lookups` parameter in the `findAllWithFiltersAndPagination` function is an array that contains objects specifying the details of any additional data lookups that need to be performed during the aggregation pipeline.
+     * @returns The `findAllWithFiltersAndPagination` function returns an Observable that emits an object with two properties:
+     * 1. `data`: An array of filtered and paginated documents from the database. Each document in the array has sensitive data like the password removed.
+     * 2. `total`: The total count of documents that match the filter criteria.
+     */
     findAllWithFiltersAndPagination(
         filterQuery: FilterQuery<TDocument>,
         page = 1,
         limit = 10,
         caseSensitiveData = {},
-        lookups = []
+        lookups = [],
     ): Observable<any> {
         const skip = (page - 1) * limit;
-
-
-
 
         const query = Object.keys(filterQuery).reduce((acc, param) => {
             acc[param] = caseSensitiveData[param]
                 ? { $eq: filterQuery[param] }
-                : { $regex: filterQuery[param], $options: "i" }; //i is used for case insensitive
-            //  { $regex: `^${filterQuery[param]}$`, $options: "i" }; //return exact match
-
+                : { $regex: filterQuery[param], $options: 'i' }; // i is used for case insensitive
             return acc;
         }, {});
 
-
-
-        /*     const pipeline = [
-                {
-                    $facet: {
-                        paginatedResults: [
-                            { $match: filterQuery },
-                            { $skip: skip },
-                            { $limit: limit },
-                        ],
-                        totalCount: [{ $match: filterQuery }, { $count: 'count' }],
-                    },
-                },
-            ]; */
-
-        // Base aggregation pipeline
         const pipeline: any = [
             { $match: query },
             ...lookups.map((lookup) => ({
@@ -227,7 +219,6 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
                     pipeline: lookup.pipeline || [], // Nested pipeline for child lookups
                 },
             })),
-
             {
                 $facet: {
                     data: [
@@ -235,16 +226,18 @@ export abstract class AbstractRepository<TDocument extends AbstractDocument> {
                         { $skip: skip },
                         { $limit: limit },
                     ],
-                    totalCount: [{ $count: "count" }],
+                    totalCount: [{ $count: 'count' }],
                 },
             },
         ];
 
-
         return from(this.model.aggregate(pipeline)).pipe(
             map(([result]) => ({
-                data: result.data,
-                total: result.totalCount[0].count,
+                data: result.data.map((item) => {
+                    const { password, ...rest } = item;
+                    return rest;
+                }),
+                total: result.totalCount[0]?.count || 0,
             })),
         );
     }

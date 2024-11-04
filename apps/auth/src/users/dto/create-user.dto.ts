@@ -1,6 +1,6 @@
 import { OmitType } from '@nestjs/mapped-types';
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Exclude, Type } from 'class-transformer';
 import {
     IsDate,
     IsEmail,
@@ -51,7 +51,7 @@ export class CreateUserDto {
     @Type(() => Date)
     modifiedOn: Date;
 }
-
+type User = Omit<CreateUserDto, "password">
 export class UserDto extends OmitType(CreateUserDto, ['password'] as const) {
     @ApiProperty({
         description: 'User ID',
@@ -60,6 +60,9 @@ export class UserDto extends OmitType(CreateUserDto, ['password'] as const) {
     })
     @IsString()
     _id: string;
+
+    @Exclude()
+    password: string;
 }
 
 export class UserFilterResponseDto {
